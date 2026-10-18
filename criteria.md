@@ -53,35 +53,42 @@ whether you hit them:
 
 ## 1.
 
-<!-- Your criterion. It must name a number. -->
+1. Overall accuracy
 
-
+Criterion: Overall accuracy must be at least 0.65 on the held-out test set for each of the three random seeds.
 
 **Why this target:**
+It sets a useful standard above random guessing without assuming the model will classify every post correctly.
 
+How to check it: For each seed, divide the number of correct predictions by the total number of predictions on the held-out test set. The criterion is MET only if accuracy is at least 0.65 for all three seeds.
 
+How to check it: For each seed, divide the number of correct predictions by the total number of predictions on the held-out test set. The criterion is MET only if accuracy is at least 0.65 for all three seeds.
 
 ---
 
 ## 2.
 
 <!-- Your criterion. -->
+Criterion: The F1 score for each label (analysis, personal_response, and brief_reference) must be at least 0.60 on the held-out test set for each of the three random seeds.
 
 
 
 **Why this target:**
 
+I chose this target because the model needs to recognize all three labels, but the smallest label may have fewer examples and a less stable score.
 
-
+How to check it: Calculate the F1 score separately for each label on the held-out test set for all three seeds. The criterion is MET only if every label achieves an F1 score of at least 0.60 for every seed.
 ---
 
 ## 3.
 
 <!-- Your criterion. -->
-
-
+Criterion: No single label (analysis, personal_response, or brief_reference) may account for more than 50% of the full labeled dataset.
 
 **Why this target:**
+Why this target: It helps prevent the dataset from being dominated by one label, while allowing some differences in the number of examples for each label.
+
+How to check it: Count the examples assigned to each label, divide each count by the total number of labeled examples, and convert each result to a percentage. The criterion is MET only if every label accounts for 50% or less of the full dataset.
 
 
 
@@ -90,11 +97,14 @@ whether you hit them:
 ## 4.
 
 <!-- Your criterion. -->
+Criterion: The difference between the highest and lowest overall accuracy scores across the three random seeds must be no greater than 0.10 on the held-out test set.
 
 
 
 **Why this target:**
+I chose this target because the model should perform consistently across different training runs, while allowing some variation caused by random initialization and data splitting.
 
+How to check it: Record the overall accuracy for each of the three random seeds. Subtract the lowest accuracy from the highest accuracy. The criterion is MET if the difference is 0.10 or less.
 
 
 ---
@@ -102,11 +112,12 @@ whether you hit them:
 ## 5.
 
 <!-- Your criterion. -->
-
-
+Criterion: At least 70% of the model's predictions on the held-out test set must have a maximum predicted class probability of 0.70 or higher for each of the three random seeds.
 
 **Why this target:**
+ I chose this target because the model should be reasonably confident when making predictions, but it should not treat every prediction as certain.
 
+How to check it: For each seed, calculate the predicted probability for each of the three labels and identify the highest probability for each test example. Count the predictions whose highest probability is at least 0.70, then divide by the total number of test examples. The criterion is MET only if at least 70% of predictions meet the confidence threshold for all three seeds.
 
 
 ---
