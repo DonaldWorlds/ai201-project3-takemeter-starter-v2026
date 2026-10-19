@@ -42,6 +42,8 @@
 <!-- Your community, and what your classifier sorts posts into. Three or four
      sentences. -->
 
+TakeMeter is a text classification project that sorts public Reddit posts and comments from r/hiphopheads into three categories: analysis, hot_take, and reaction. The goal is to see whether a language model can learn the differences between posts that make fact-based arguments, confident unsupported claims, and immediate reactions. I created a dataset of 216 labeled posts and fine-tuned DistilBERT to classify them. I evaluated the trained model on a held-out test set to see which categories it learned and where it struggled.
+
 
 
 ---
@@ -142,16 +144,31 @@ I chose, because: reaction fits because the comment mainly describes the writer'
 
 <!-- Your starting model, your settings, and anything you changed and why. -->
 
-**Base model:**
+**Base model:** distilbert-base-uncased
 
 **Settings:** <!-- epochs, learning rate, batch size, seed -->
+3 epochs, learning rate 2e-5, batch size 16, maximum sequence length 128 tokens, seed 42.
 
 **Anything I changed from the defaults, and why:**
+I kept the default training settings so I could establish a baseline before experimenting with changes in the next unit.
 
 **Split sizes:** <!-- train / val / test, and per-label counts in the test
 split. If a label had fewer than about 8 in test, say so — it explains a lot
 of next unit's variance. -->
 
+150 training posts, 33 validation posts, and 33 test posts.
+
+Test examples by label:
+
+analysis: 11
+
+hot_take: 16
+
+reaction: 6
+
+Device: Apple Silicon GPU (MPS).
+
+Test results: Accuracy was 0.636 (63.6%), and macro F1 was 0.462. F1 was 0.667 for analysis, 0.718 for hot_take, and 0.000 for reaction. The reaction test set had only six examples, which limits how confidently I can interpret that score.
 
 
 ---
@@ -167,15 +184,16 @@ of next unit's variance. -->
 
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* Help proposing labels for Reddit posts using my three-category taxonomy.
+- *What came back:* AI-assisted label suggestions for posts after my initial set of independently labeled examples.
+- *What I changed:* I used the project’s final labels—analysis, hot_take, and reaction—and documented difficult examples where the distinction between categories required judgment.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* Help understanding the notebook’s training output, warnings, and evaluation metrics.
+- *What came back:*  An explanation of the PyTorch and progress-bar warnings, along with an interpretation of accuracy, macro F1, and the per-label scores.
+- *What I changed:* I kept the default training settings and recorded the weak reaction result and the small number of reaction examples in the test set as limitations.
+
 
 **Pre-labelling disclosure:**
 
@@ -185,6 +203,8 @@ of next unit's variance. -->
      ═══════════════════════════════════════════════════════════════════ -->
 
 ---
+
+Pre-labelling disclosure: I labeled the first 20 posts independently without AI assistance and marked them as cold in the note column. I used AI assistance to propose labels for the remaining posts and marked those rows as not cold. AI-assisted labels are disclosed rather than presented as entirely independent human labeling.
 
 ## Baseline vs. Trained
 

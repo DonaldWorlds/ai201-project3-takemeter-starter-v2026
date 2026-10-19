@@ -329,3 +329,112 @@ before you push.
 
 **Do not delete and recreate this repository.** You submit the same URL both
 units.
+
+
+
+
+device: mps  (Apple Silicon GPU (MPS))
+torch:  2.14.1
+
+⚠️  WRITE THIS DOWN. Your results depend on it.
+
+Two people running this notebook on the same data with the same seed can
+get different numbers, because different hardware does the arithmetic in
+a slightly different order. That is not a bug and it is not one of you
+being wrong — it is a real property of the thing you are building, and
+unit 6 asks you to report it alongside your three seeds.
+
+
+### Milestone 1: Candidate Distinctions
+
+**Community:** r/hiphopheads on Reddit
+
+1. **Some posts explain their opinions, while others just state them.** For example, one commenter says Busta Rhymes became successful because of his group and then became a star solo, explaining why he fits the question. Other comments simply say “Legendary” or “Lil Wayne and the hot boys.”
+
+2. **Some posts include specific examples, while others make general statements.** One commenter names several groups and artists, including Nelly and the St. Lunatics, Eminem and D12, and 50 Cent and G-Unit. Other commenters only name one artist, such as “KOOL KEITH.”
+
+3. **Some posts add personal experiences, while others focus on facts or opinions.** One commenter describes growing up in New Orleans and explains how people viewed the Hot Boyz as a group. Another recalls discovering MF DOOM through an old graffiti magazine.
+
+4. **Some posts build on or correct other comments, while others stand alone.** One commenter adds that MF DOOM was in KMD, while another responds by distinguishing KMD from MIC (Monsta Island Czars). Other comments contribute a name or short reaction without developing the discussion further.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Milestone 2: Design My Labels
+
+**Community:** r/hiphopheads
+
+## Label 1: `analysis`
+
+**Definition:** A post that explains a claim or opinion using specific details, comparisons, or reasoning.
+
+**Example 1:**
+> They just didn't have it. They weren't that successful as a group in the first place and the two things they did have going for them were Busta and their connection to ATCQ. So when they didn't have Busta anymore nobody was going to be tuning in to see what Charlie Brown does with his career.
+
+**Example 2:**
+> This is the best answer. Based on group success, solo success, and then never forming the group again. I'll accept Lil Wayne but only if you count the bg'z as a group. Hot boys were always a super group and you met them after juvenile solidified his spot.
+
+**Why these fit:** Both comments explain their points with reasoning and details about an artist's career or group history.
+
+## Label 2: `personal_response`
+
+**Definition:** A post that mainly expresses a personal opinion, feeling, preference, or memory without developing a reasoned argument.
+
+**Example 1:**
+> That whole La Roux tape goes hard. Always bang it in the gym.
+
+**Example 2:**
+> This shit was sensational freshman year in college.
+
+**Why these fit:** Both comments communicate a personal reaction or experience rather than explaining a claim with supporting details.
+
+## Label 3: `brief_reference`
+
+**Definition:** A post that mainly names an artist, group, song, or factual connection without explaining or supporting a larger point.
+
+**Example 1:**
+> MF DOOM was originally in KMD (as Zev Love X)
+
+**Example 2:**
+> Dr. Dre was in World Class Wreckin Cru
+
+**Why these fit:** Both comments contribute a specific music-related reference but do not develop an explanation around it.
+
+## Borderline post
+
+**Post:**
+> I remember Big Sean version. It was honestly dope even though he's not the best rapper.
+
+**Labels it could fit:** `personal_response` or `analysis`
+
+**Decision rule:** If a post mainly expresses a personal opinion or reaction and does not give a specific supporting reason, classify it as `personal_response`, even if it includes a qualification such as “even though he's not the best rapper.” Use `analysis` when the writer develops an explanation with specific details, comparisons, or reasoning.
+
+## Stress test
+
+I will test these definitions with eight fictional comments that sit near the boundaries between the labels. These are generated examples, not actual Reddit posts.
+
+1. “Busta was better solo because his delivery stood out more.” — `analysis`
+2. “Busta is still one of my favorites.” — `personal_response`
+3. “Busta Rhymes was part of Leaders of the New School.” — `brief_reference`
+4. “I loved that album in high school because I played it every day.” — `personal_response`
+5. “The album was successful because it produced several hit singles.” — `analysis`
+6. “KMD had MF DOOM before his solo career.” — `brief_reference`
+7. “That song is fire, especially compared with his newer music.” — Borderline: `personal_response` or `analysis`
+8. “I prefer the original because the vocals are clearer and the beat has more space.” — `analysis`
+
+**Stress-test finding:** Posts 7 and 8 show that a preference can include a comparison or a reason. The decision rule should distinguish a simple preference from a developed explanation. If the writer gives a specific reason for the preference, classify it as `analysis`; otherwise, use `personal_response`.
+
+**Limitation:** These are initial definitions. I should apply them to more real comments and check whether the labels remain clear before labeling the full dataset.
