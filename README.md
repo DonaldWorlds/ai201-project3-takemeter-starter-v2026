@@ -92,18 +92,21 @@
      cases. -->
 
 **Where the posts came from:**
+I collected public posts and comments from the Reddit community r/hiphopheads. The dataset is stored in one CSV file named labels.csv, with the columns text, label, and note.
 
 **How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
 Say so plainly — the disclosure is required, not penalised. -->
 
+I used three labels: analysis, personal_response, and brief_reference. I labelled the first 20 posts independently without AI assistance and marked them cold in the note column. I used AI assistance to draft labels for the remaining posts and marked those rows not cold. I will review and correct every AI-assisted label before finalizing the dataset.
+
 **Counts per label:**
 
 | Label | Count | Share |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+|---|---:|---:|
+| `analysis` | 92 | 42.6% |
+| `personal_response` | 38 | 17.6% |
+| `brief_reference` | 86 | 39.8% |
+| **Total** | **216** | **100%** |
 
 **Three hard cases**
 
@@ -112,25 +115,27 @@ Say so plainly — the disclosure is required, not penalised. -->
 
 **1.**
 > *The post:*
->
+>“He was a dancer for them primarily though
 > *Could have been:*
->
+>brief_reference or analysis
 > *I chose, because:*
+I chose, because: brief_reference fits because the comment mainly states a fact about Tupac's role without explaining a larger argument.
 
 **2.**
 > *The post:*
->
+>“He was never a member of digital underground really, but he was in a band called strictly dope before that”
 > *Could have been:*
->
+>analysis or brief_reference
 > *I chose, because:*
+I chose, because: analysis fits if the comment is interpreted as correcting an earlier claim and supporting that correction with an additional detail.
 
 **3.**
 > *The post:*
->
+>“I didn't like any Odd Future music, but I love all of their solo work.”
 > *Could have been:*
->
+>personal_response or analysis
 > *I chose, because:*
-
+I chose, because: personal_response fits because the comment mainly describes the writer's personal music preferences without developing a detailed argument.
 ---
 
 ## The Training Run
