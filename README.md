@@ -103,9 +103,9 @@ I used three labels: analysis, personal_response, and brief_reference. I labelle
 
 | Label | Count | Share |
 |---|---:|---:|
-| `analysis` | 92 | 42.6% |
-| `personal_response` | 38 | 17.6% |
-| `brief_reference` | 86 | 39.8% |
+| `analysis` | 73 | 33.8% |
+| `hot_take` | 101 | 46.8% |
+| `reaction` | 42 | 19.4% |
 | **Total** | **216** | **100%** |
 
 **Three hard cases**
@@ -117,15 +117,15 @@ I used three labels: analysis, personal_response, and brief_reference. I labelle
 > *The post:*
 >“He was a dancer for them primarily though
 > *Could have been:*
->brief_reference or analysis
+>hot_take or analysis
 > *I chose, because:*
-I chose, because: brief_reference fits because the comment mainly states a fact about Tupac's role without explaining a larger argument.
+I chose, because: hot_take fits because the comment mainly states a fact about Tupac's role without explaining a larger argument.
 
 **2.**
 > *The post:*
 >“He was never a member of digital underground really, but he was in a band called strictly dope before that”
 > *Could have been:*
->analysis or brief_reference
+>analysis or hot_take
 > *I chose, because:*
 I chose, because: analysis fits if the comment is interpreted as correcting an earlier claim and supporting that correction with an additional detail.
 
@@ -133,9 +133,9 @@ I chose, because: analysis fits if the comment is interpreted as correcting an e
 > *The post:*
 >“I didn't like any Odd Future music, but I love all of their solo work.”
 > *Could have been:*
->personal_response or analysis
+>hot_take or analysis
 > *I chose, because:*
-I chose, because: personal_response fits because the comment mainly describes the writer's personal music preferences without developing a detailed argument.
+I chose, because: reaction fits because the comment mainly describes the writer's personal music preferences without developing a detailed argument.
 ---
 
 ## The Training Run
