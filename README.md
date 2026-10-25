@@ -470,7 +470,33 @@ draw.
 | 4 | Accuracy spread across seeds | ≤ 0.10 | MET | The recorded accuracy spread was 0.030, below the 0.10 target. |
 | 5 | Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | MISSED | 0 of 33 predictions cleared 0.70 on every seed — 0.0% against a 70% target. The highest top probability the model produced anywhere was 0.602. |
 
+Three missed, two met. Criteria 2 and 3 carry a **Revised in unit 6** note in
+`criteria.md`: both were filed naming `personal_response` and
+`brief_reference`, labels I replaced later in unit 5, so neither could be
+checked as written. Only the label names changed — the 0.60 and 50% thresholds
+are as filed, and neither verdict moves.
 
+### Arguing the opposite
+
+I tried to break both METs before keeping them.
+
+**Criterion 3** holds. `hot_take` is 46.8% against a 50% ceiling, and the best
+case against it is that 3.2 points is a thin margin on a dataset I built
+myself. That is a fair complaint about the target, not about the verdict.
+
+**Criterion 4 is the one that survives the arithmetic and fails on meaning,
+and I am keeping the MET with that written next to it.** The spread is 0.030
+against a 0.10 ceiling, so MET is the honest call. But I wrote that criterion
+to mean "the model behaves consistently across training runs", and what it
+actually certified is that the model fails the same way every time. `reaction`
+F1 was 0.000 on all three seeds and the `reaction` column was empty on all
+three; a model that never emits one of its labels cannot produce much variance
+to begin with. Two further things flatter the number: the split is stratified,
+so every seed gets the same per-label test counts (11 / 16 / 6) and one source
+of variance is removed by construction, and three seeds is a very small sample
+to estimate a spread from. **Criterion 4 is MET, and it is the criterion I
+would rewrite if I were filing these again** — stability is only worth
+measuring alongside a floor on quality, and mine had none.
 
 **Diagnoses**
 
@@ -482,18 +508,113 @@ draw.
      ⚠️ Use your agreement report as evidence. It is the only instrument you
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
-**Criterion 1 — Overall accuracy**
 
-Cause: The model did not meet the accuracy target consistently across seeds.
+**Criterion 1 — Overall accuracy (MISSED: 0.636, 0.636, 0.667 against ≥ 0.65)**
 
-Evidence: Seeds 42 and 7 scored 0.636, below 0.65, while Seed 2024 scored 0.667. The accuracy spread was only 0.030, suggesting relatively stable results, but the target was not met across all three seeds.
+**Cause:** Not an independent failure. This miss is criterion 2 showing up in
+the accuracy column, and it is small enough that fixing `reaction` would clear
+it.
 
-**Criterion 2 — F1 for every label**
+**How I know:** Splitting the errors by seed:
 
-Cause: The model struggled to distinguish `reaction` from the other labels.
+| Seed | Correct | Errors from the 6 `reaction` posts | Errors from `analysis`/`hot_take` mixups |
+|---|---:|---:|---:|
+| 42 | 21/33 | 6 | 6 |
+| 7 | 21/33 | 6 | 6 |
+| 2024 | 22/33 | 6 | 5 |
 
-Evidence: `reaction` F1 was 0.000 for all three seeds. In the Seed 42 confusion matrix, all six actual `reaction` posts were misclassified: five as `hot_take` and one as `analysis`. The dataset contains 42 `reaction` examples compared with 101 `hot_take` examples, so the smaller number of `reaction` examples may contribute to the problem.
+Every `reaction` post in the test split is wrong on every seed, because the
+label is never predicted. That is half of all errors on two of the three
+seeds. The model's ceiling while `reaction` stays inert is 27/33 = 0.818, and
+it leaves 6 of those 27 on the table on seeds 42 and 7 and 5 on seed 2024 — so
+on the two labels it will actually use it runs at 0.778, 0.778 and 0.815,
+comfortably above the 0.65 target.
+**Lifting `reaction` recall to even 50% puts accuracy at 0.727 on seeds 42 and
+7 and 0.758 on seed 2024, clearing the target on all three without the model
+getting any better at the other two labels.** So the useful diagnosis is not
+"accuracy is low" — it is that one dead label is costing roughly 18 accuracy
+points, and criterion 1 is downstream of criterion 2.
 
+**Criterion 2 — F1 for every label (MISSED: `reaction` 0.000 on all three seeds)**
+
+**Cause:** Two of the four, and they compound: **too few examples for the
+label**, and **a boundary I applied inconsistently in my own training data.**
+The second is the one I can now measure, and it is the one that matters.
+
+**How I know, on the examples:** `reaction` is my smallest class at 42 of 216
+posts (19.4%), which leaves about 29 in train and 6 in test. `hot_take` has
+101. When the model is unsure, the cheapest guess is the larger class, and the
+matrix shows exactly that: 5 of the 6 real `reaction` posts went to `hot_take`
+on seed 42 and 0 went the other way. But scarcity alone does not explain
+`reaction` F1 being *exactly* 0.000 rather than merely low — the label is never
+emitted at all, on any of the 99 held-out predictions across three seeds. A
+label that is merely thin usually still gets predicted sometimes.
+
+**How I know, on the labelling — and this is where the agreement report comes
+in:** the staff check came back 30/30 with zero disagreements, so taken at face
+value it reports no labelling problem. I do not think it is usable that way,
+for the reasons set out in the **Agreement Report** below: the staff decision
+rules are far more testable than mine, `data/staff_posts.csv` is ordered in
+label blocks, and it tests a different taxonomy on different posts. A null
+result from an instrument that insensitive is not evidence of consistency.
+
+The instrument that does work is my own repo. I labelled the same 216 posts
+twice in unit 5, and `reaction` is the least stable label in the dataset:
+
+| Final label | Total | From its own predecessor | Moved in from elsewhere |
+|---|---:|---:|---:|
+| `analysis` | 73 | 59 | 14 (19.2%) |
+| `hot_take` | 101 | 72 | 29 (28.7%) |
+| **`reaction`** | **42** | **26** | **16 (38.1%)** |
+
+**Over a third of my final `reaction` posts are ones I had first called
+something else — and 10 of them I had called `analysis`, the opposite end of
+the taxonomy.** On my own data, in my own hand, `reaction` is the category I
+could least reliably recognise twice. So the honest reading is that `reaction`
+is not only small, it is noisily defined: more than a third of the `reaction`
+posts the model trains on come from a boundary I had drawn somewhere else days
+earlier. A model cannot learn a distinction its training labels do not make
+consistently.
+
+It is also the weakest rule in my taxonomy, and the two facts fit together. My
+`analysis` rule gives me something to check on the page — is a reason given for
+the claim, yes or no. My `reaction` rule asks what the post is *about*, the
+writer or the music, and nothing on the surface settles that. A rule with no
+observable test is one I can apply two ways without noticing, which is
+precisely what the churn table shows me doing.
+
+**Criterion 5 — Confidence (MISSED: 0% of predictions at ≥ 0.70, on all three seeds)**
+
+**Cause:** The fourth one — a task the model cannot reach from this much data
+at these settings. This is underfitting, not miscalibration.
+
+**How I know:** A three-class model that outputs a flat distribution has a
+cross-entropy loss of ln(3) = 1.099. Here is where three epochs got each run:
+
+| Seed | Train loss, epoch 1 → 3 | Final eval loss | Val accuracy by epoch | Highest top prob |
+|---|---|---:|---|---:|
+| 42 | 1.079 → 0.983 | 0.989 | 0.576 → 0.545 → 0.545 | 0.491 |
+| 7 | 1.053 → 0.937 | 1.002 | 0.485 → 0.455 → 0.455 | 0.505 |
+| 2024 | 1.083 → 0.923 | 0.942 | 0.545 → 0.576 → 0.576 | 0.602 |
+
+After all three epochs the loss has moved only about 0.12 to 0.18 below the
+flat-distribution value. The model has barely left its starting point, which is
+why no prediction anywhere reaches 0.70 and the mean top probability sits
+between 0.434 and 0.474 against a floor of 0.333. On seeds 42 and 7 validation accuracy
+actually went *down* after epoch 1 and then stopped moving.
+
+The arithmetic says why: 150 training posts at batch size 16 is about 10
+optimiser steps per epoch, so the whole fine-tune is **roughly 30 gradient
+steps**. That is not enough to move a 66M-parameter model far from
+initialisation, and it is the same fact underneath criterion 5 and the
+`reaction` failure — an underfit model defaults to the majority class and never
+commits to anything.
+
+This one is cleanly separable from the labelling problem. Criterion 2 is about
+*which* label the model picks, and the evidence there points at my data.
+Criterion 5 is about *how hard* it picks anything at all, and that points at
+the training run. They need different fixes, which is what makes the choice in
+**The Improvement** below a real choice.
 
 ---
 
