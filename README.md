@@ -137,6 +137,22 @@ the note column. I used AI assistance to draft labels for the remaining 196 and
 marked those rows `not cold`. I read and corrected every AI-drafted label before
 finalising the dataset.
 
+**The taxonomy changed once, part-way through unit 5.** My first labelling pass
+used `analysis` / `personal_response` / `brief_reference` (92 / 38 / 86), and
+that version is in the repo at commit `48a391a`. I then reworked the taxonomy
+to `analysis` / `hot_take` / `reaction` and re-labelled the same 216 posts at
+commit `545fc49`. Both commits are from 18 October, before anything was
+trained, and the taxonomy has not moved since.
+
+It was not a rename. Against the obvious mapping — `brief_reference` to
+`hot_take`, `personal_response` to `reaction`, `analysis` unchanged — **59 of
+the 216 posts came back in a different class, 27.3% of the dataset.** The
+largest flows were 23 posts from `analysis` to `hot_take` and 10 from
+`analysis` to `reaction`. I am recording this because it is the most direct
+measurement I have of my own labelling stability, and it is not a flattering
+one. It is also why `criteria.md` criteria 2 and 3 still named the old labels
+until unit 6.
+
 **Counts per label:**
 
 | Label | Count | Share |
@@ -574,12 +590,21 @@ applied; mine were written after I had already started labelling. And 196 of my
 from scratch.
 
 I also already have direct evidence pointing the other way, from my own repo
-rather than from this check. Hard case 1 in **The Dataset** above —
+rather than from this check, and it is much stronger than anything 30 posts
+could have told me. As recorded in **The Dataset** above, I labelled all 216
+posts twice in unit 5 under two versions of my taxonomy, and **59 of them —
+27.3% — came back in a different class** once the obvious rename is accounted
+for. That is a direct, measured disagreement rate between me and myself on my
+own data, against 0% disagreement with staff on theirs. The two numbers are not
+in tension; they are measuring different things, and the one that bears on my
+216 labels is the 27.3%.
+
+The smaller instance points the same way. Hard case 1 in **The Dataset** —
 *"He was a dancer for them primarily though"* — is labelled `analysis` in
 `labels.csv`, and my own written decision rule says a bare fact with nothing
-built on it is a `hot_take`. That is one confirmed instance of me applying my
-own rule two different ways, and the agreement check did not and could not
-catch it, because it tests a different taxonomy on different posts.
+built on it is a `hot_take`. That is a confirmed instance of me applying my own
+rule two different ways, and the agreement check did not and could not catch
+it, because it tests a different taxonomy on different posts.
 
 So the conclusion I take into the diagnoses is narrow and it is deliberately
 not reassuring: **the agreement check failed to find a labelling problem, which

@@ -78,6 +78,27 @@ Criterion: The F1 score for each label (analysis, personal_response, and brief_r
 I chose this target because the model needs to recognize all three labels, but the smallest label may have fewer examples and a less stable score.
 
 How to check it: Calculate the F1 score separately for each label on the held-out test set for all three seeds. The criterion is MET only if every label achieves an F1 score of at least 0.60 for every seed.
+
+> **Revised in unit 6:** The F1 score for each label — `analysis`, `hot_take`
+> and `reaction` — must be at least 0.60 on the held-out test set for each of
+> the three random seeds.
+>
+> **Why revised:** `personal_response` and `brief_reference` were real labels
+> when I filed this criterion — they were my taxonomy at the time, and the
+> first committed version of `labels.csv` used them. Later in unit 5 I reworked
+> the taxonomy to `analysis` / `hot_take` / `reaction` and re-labelled all 216
+> posts, and I never came back to update this file. Both of those commits are
+> from 18 Oct, before anything was trained; the taxonomy has not moved in
+> unit 6.
+>
+> That leaves the criterion naming two labels that no longer exist, so there is
+> no F1 to compute for them and nothing to check. It is unmeasurable as filed,
+> not merely unmet — which is the case this file says I may revise.
+>
+> Only the label names change. The 0.60 threshold, the "every label, every
+> seed" rule and the method are exactly as filed, and the verdict is unchanged:
+> **MISSED**, because `reaction` scored 0.000 on all three seeds.
+
 ---
 
 ## 3.
@@ -89,6 +110,19 @@ Criterion: No single label (analysis, personal_response, or brief_reference) may
 Why this target: It helps prevent the dataset from being dominated by one label, while allowing some differences in the number of examples for each label.
 
 How to check it: Count the examples assigned to each label, divide each count by the total number of labeled examples, and convert each result to a percentage. The criterion is MET only if every label accounts for 50% or less of the full dataset.
+
+> **Revised in unit 6:** No single label — `analysis`, `hot_take` or
+> `reaction` — may account for more than 50% of the full labeled dataset.
+>
+> **Why revised:** The same defect as criterion 2, from the same cause — the
+> criterion was filed under my original taxonomy and never updated when I
+> re-labelled the dataset later in unit 5. Two of the three labels named are no
+> longer in `labels.csv`, so their share of the dataset is not a number that
+> can be computed, and the criterion could not be checked as written.
+>
+> Only the label names change. The 50% threshold and the method are as filed
+> in unit 5, and the verdict is unchanged: **MET** — `hot_take` 101/216
+> (46.8%), `analysis` 73/216 (33.8%), `reaction` 42/216 (19.4%).
 
 
 
