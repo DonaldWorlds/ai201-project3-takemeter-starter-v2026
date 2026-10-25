@@ -489,6 +489,11 @@ Evidence: `reaction` F1 was 0.000 for all three seeds. In the Seed 42 confusion 
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
+I labelled all 30 posts in `data/staff_posts.csv` under the definitions and the
+four decision rules in `data/staff_taxonomy.md` — not my own taxonomy — and
+saved them to `my_staff_labels.csv` before asking for the answer key. Raw output
+in `agreement_results.json`.
+
 **Agreement rate:** 30 / 30 = 100%
 
 <!-- Nobody grades this number. A 60% who argues every disagreement from the
@@ -496,48 +501,91 @@ Evidence: `reaction` F1 was 0.000 for all three seeds. In the Seed 42 confusion 
      of the 30 were chosen because they're genuinely ambiguous — you should be
      winning some of these. -->
 
-**Disagreements**
+**Disagreements:** none. There is nothing to adjudicate and nothing to sort
+into piles (a), (b) or (c).
 
-<!-- Three lines each: the post, both labels, and who you think is right and
-     why — grounded in the staff definitions you were both applying.
+`agreement.py` asks, when the rate comes out at 100%, whether the set was easy
+or my rule is genuinely tight. The honest answer is neither — and the reasons
+matter more than the number, because Milestone 4 wants to use this check as
+evidence about my own 216 labels.
 
-     Then sort each into one of three piles:
-       (a) the rule covered it and I applied it loosely → a consistency problem
-       (b) the rule genuinely doesn't say               → a gap in the definitions
-       (c) the rule is ambiguous here and my reading is defensible → argue it.
-           This is a legitimate win.
+**Why 100% is weaker evidence than it looks**
 
-     Pile (a) is the one that matters most for your diagnosis: if you applied a
-     written rule two different ways on 30 posts, that is direct evidence about
-     what you did across your own 200. -->
-Disagreements: 0
+Two properties of the instrument, not of my labelling:
 
-There were no disagreements to adjudicate or sort into the three categories.
+1. **The decision rules are unusually explicit.** Rule 1 gives a test I can
+   actually run on a post — is the fact load-bearing, or is it decoration on a
+   conclusion already reached? Rule 2 gives another — is this about the writer
+   or about the world? These are far tighter than anything I wrote for my own
+   taxonomy in unit 5, where my `reaction` vs `hot_take` boundary came down to
+   tone. A rule that specific is hard to apply two different ways.
 
-What the pattern in my disagreements tells me:
+2. **`data/staff_posts.csv` is ordered by label.** `sp_001`–`sp_010` are all
+   `analysis`, `sp_011`–`sp_020` are all `hot_take`, `sp_021`–`sp_030` are all
+   `reaction`. Labelling in file order means each post sits next to nine others
+   of its own class, and consecutive posts corroborate each other. That is a
+   meaningfully easier task than the same 30 posts shuffled, and it is nothing
+   like labelling 216 posts arriving in thread order. The rate from an ordered
+   set and the rate from a shuffled one are not the same measurement.
 
-There were no disagreements in this set, so I cannot identify a pattern of disagreement or determine whether I applied any rules inconsistently. I agreed with the staff labels on all 30 posts. This is encouraging, but it does not prove that my original 200 labels were consistently applied or that the taxonomy resolves every ambiguous case. Further evaluation on additional examples would be needed to assess that.
+**The seven posts staff flagged as hard**
 
-**1.**
-> *The post:*
->None — there were no disagreements.
-> *Staff said / I said:*
->No disagreements; both labels matched on all 30 posts.
-> *My call, and why:*
->No adjudication was necessary because my labels matched the staff labels for every post.
-> *Which pile:* Not applicable.
+Staff marked 7 of the 30 `borderline` in `data/staff_labels.csv`. Those are the
+only ones where agreeing says anything, so here is the reasoning on three of
+them, written from the staff rules:
 
-**2.**
-> *The post:*
-> there were no disagreements.
-> *Staff said / I said:*
->No disagreements; both labels matched on all 30 posts.
-> *My call, and why:*
->No adjudication was necessary because my labels matched the staff labels for every post.
-> *Which pile:*Not applicable.
+- **`sp_014`** — *"Times are down about 3% since the shoe rules changed, so
+  obviously the shoes are the whole story and the sport has a problem."* I
+  labelled it `hot_take`. It contains a real, checkable number, which is what
+  makes it tempting. But rule 1 asks whether the fact carries the argument, and
+  here "so obviously" carries it — the 3% is attached to a conclusion the
+  writer had already reached, not the reason they reached it. A statistic in a
+  post is not the test.
 
-**What the pattern in my disagreements tells me:**
-There were no disagreements in this set, so I could not identify a pattern of disagreement or determine whether I applied any rules inconsistently. I agreed with the staff labels on all 30 posts using the staff taxonomy. This is encouraging, but it does not prove that my original 200 labels were consistently applied or that the taxonomy resolves every ambiguous case. Further evaluation would be needed to assess that.
+- **`sp_019`** — *"Nobody actually enjoys the long run. They enjoy having done
+  it…"* I labelled it `hot_take`. It reads reflective and personal, which pulls
+  toward `reaction`, but rule 2 asks whether it is about the writer or about
+  the world, and "nobody" is a claim about everyone. Tone is not the test.
+
+- **`sp_028`** — *"Third DNF this year. I don't really want to talk about it,
+  just wanted to put it somewhere."* I labelled it `reaction`. "Third this
+  year" is countable, so rule 3 is in play — recency does not outrank evidence.
+  But rule 3 only rescues a post into `analysis` if some fact is load-bearing,
+  and nothing is argued from the count at all. The writer is reporting their
+  own state.
+
+What these have in common is that in each one the surface signal — a number, a
+reflective tone, a countable detail — points the wrong way, and the written
+rule overrides it. That is the thing worth claiming from a 100%: on this set I
+followed the rule rather than the surface.
+
+**What the pattern tells me — and what it does not**
+
+There is no pattern of disagreement to read, which is itself the problem. A
+100% rate gives me no instance of pile (a) and therefore no direct measurement
+of my own inconsistency. It is a null result, not a clean bill of health.
+
+And I should not carry it across to my own data, for three reasons. The staff
+set is 30 short, purpose-written posts from a fictional forum; my set is 216
+real Reddit comments, some one word long, many of them replies that only make
+sense against a parent I did not record. The staff rules were written to be
+applied; mine were written after I had already started labelling. And 196 of my
+216 were AI-drafted and then corrected by me, where all 30 of these were mine
+from scratch.
+
+I also already have direct evidence pointing the other way, from my own repo
+rather than from this check. Hard case 1 in **The Dataset** above —
+*"He was a dancer for them primarily though"* — is labelled `analysis` in
+`labels.csv`, and my own written decision rule says a bare fact with nothing
+built on it is a `hot_take`. That is one confirmed instance of me applying my
+own rule two different ways, and the agreement check did not and could not
+catch it, because it tests a different taxonomy on different posts.
+
+So the conclusion I take into the diagnoses is narrow and it is deliberately
+not reassuring: **the agreement check failed to find a labelling problem, which
+is not the same as finding there isn't one.** On the specific question of
+whether `reaction` is inert because of my labelling or because of the model, 30
+clean posts under somebody else's tight rule cannot answer it either way.
 
 ---
 
