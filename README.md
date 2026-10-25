@@ -343,8 +343,10 @@ Both files are committed: `baseline_results.json` and
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
 
-
-## **Run Log — Before**
+Three seeds — 42, 7 and 2024 — each a fresh stratified 70/15/15 split and a
+fresh fine-tune, run in one cell by section 6 of the notebook. Trained on an
+Apple Silicon GPU (MPS), torch 2.14.1. Raw numbers in
+`results_three_seeds_before.json`.
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
@@ -352,13 +354,44 @@ Both files are committed: `baseline_results.json` and
 | 2. Every label F1 | ≥ 0.60 for every label | analysis: 0.667; hot_take: 0.718; reaction: 0.000 | analysis: 0.636; hot_take: 0.737; reaction: 0.000 | analysis: 0.700; hot_take: 0.750; reaction: 0.000 | MISSED |
 | 3. No label exceeds 50% of the dataset | ≤ 50% per label | analysis: 33.8%; hot_take: 46.8%; reaction: 19.4% | Same dataset | Same dataset | MET |
 | 4. Accuracy spread across seeds | ≤ 0.10 | 0.636 | 0.636 | 0.667 | MET (spread: 0.030) |
-| 5. Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | Not measured | Not measured | Not measured | NEEDS CHECK |
+| 5. Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | 0.0% (0/33) | 0.0% (0/33) | 0.0% (0/33) | MISSED |
+
+Criterion 5 said "not measured" until I went back for it. The notebook's
+`confidence_report` recorded how the confident third compared with the unsure
+third, which is a relative measure and cannot answer a criterion with an
+absolute threshold in it. I added `share_at_or_above_threshold` and
+`max_confidence` to that function and re-ran section 6. Accuracy and macro F1
+came back identical on all three seeds, so the added fields measure the same
+runs the rest of this table describes.
+
+The answer is not close. Not one prediction out of 99 across the three seeds
+reached 0.70. The highest top probability the model ever produced was 0.602,
+on seed 2024; on seed 42 it was 0.491 and on seed 7 it was 0.505. With three
+labels the floor is 0.333, so the model spent the whole test set hovering just
+above a coin-flip between two of the three classes.
+
+**The spread table, as section 6 printed it**
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---:|---:|---:|---:|
+| Overall accuracy | 0.636 | 0.636 | 0.667 | 0.030 |
+| Macro F1 | 0.462 | 0.458 | 0.483 | 0.026 |
+| F1 — `analysis` | 0.667 | 0.636 | 0.700 | 0.064 |
+| F1 — `hot_take` | 0.718 | 0.737 | 0.750 | 0.032 |
+| F1 — `reaction` | 0.000 | 0.000 | 0.000 | 0.000 |
+| Share with top prob ≥ 0.70 | 0.000 | 0.000 | 0.000 | 0.000 |
+| Highest top prob seen | 0.491 | 0.505 | 0.602 | 0.112 |
+
+The notebook's own verdict on the spread: *"Accuracy moved 0.030 across seeds.
+Stable enough to trust."*
 
 ### Confusion matrix
 
 <!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
      An image of a matrix earns nothing. -->
 
+
+Seed 42, the 33 held-out posts.
 
 | true \ predicted | analysis | hot_take | reaction |
 |---|---:|---:|---:|
@@ -371,9 +404,37 @@ Both files are committed: `baseline_results.json` and
 <!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
      direction. "7 real analysis posts were called hot_take and only 3 went the
      other way" is a direction, not just an error rate. -->
-The biggest confusion was that 5 real `reaction` posts were classified as `hot_take`, while 0 real `hot_take` posts were classified as `reaction`. The model leaned toward `hot_take` when classifying these posts. This may point to a difficulty in the label definitions or in how the posts were labeled, which I will investigate using the agreement report.
+The biggest off-diagonal number is 5: five real `reaction` posts were called
+`hot_take`, and zero real `hot_take` posts went the other way. That is a
+direction, not just an error rate — the model collapses `reaction` into
+`hot_take` and never the reverse.
 
-Overall accuracy varied by 0.030 (3 percentage points) across the three seeds, which is below the assignment's 0.10 threshold. This suggests overall accuracy was relatively stable across these splits. However, the model's `reaction` F1 score remained 0.000 for all three seeds, so its failure to identify that category was consistent.
+But the column tells the bigger story. **The whole `reaction` column is zero.**
+The model did not merely get `reaction` wrong, it never once predicted
+`reaction` — not on seed 42, and not on seed 7 or seed 2024 either, where the
+`reaction` column is also all zeros. Across 99 held-out predictions it used two
+of its three labels. That is why `reaction` F1 is exactly 0.000 rather than
+merely low: recall and precision are both undefined-to-zero because the label
+was never emitted.
+
+So the boundary the model did not learn is `reaction` vs `hot_take`, in one
+direction. Both are short and unsupported; what separates them in my taxonomy
+is whether the post is about the writer's own experience or about the music,
+and that distinction is carried by tone rather than by vocabulary. `hot_take`
+has 101 training examples to `reaction`'s 42, so when the model is unsure the
+cheapest guess is the bigger class — and at a top probability of 0.49 it is
+unsure on essentially every post.
+
+Whether this is a model problem or a labelling problem is exactly what the
+agreement check is for, and I take it up in the diagnoses below.
+
+**On the spread:** accuracy moved 0.030 across the three seeds — 0.636, 0.636,
+0.667 — well inside the 0.10 band, so these numbers are stable enough to trust
+and criterion 4 is MET. Stability is not quality here, though: what is stable
+is a model that is consistently blind to one of its three labels. `reaction`
+F1 was 0.000 on all three seeds, and the `reaction` column was empty on all
+three. Three seeds confirm the failure is structural rather than one unlucky
+draw.
 
 
 
@@ -391,7 +452,7 @@ Overall accuracy varied by 0.030 (3 percentage points) across the three seeds, w
 | 2 | F1 for every label | ≥ 0.60 for every label across all three seeds | MISSED | The `reaction` F1 score was 0.000 for all three seeds, below the 0.60 target. |
 | 3 | No single label exceeds 50% of the dataset | ≤ 50% per label | MET | `hot_take` = 101/216 (46.8%), `analysis` = 73/216 (33.8%), and `reaction` = 42/216 (19.4%). |
 | 4 | Accuracy spread across seeds | ≤ 0.10 | MET | The recorded accuracy spread was 0.030, below the 0.10 target. |
-| 5 | Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | NEEDS CHECK | The current run-log results do not include the percentage of predictions meeting this confidence threshold, so the verdict cannot yet be determined. |
+| 5 | Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | MISSED | 0 of 33 predictions cleared 0.70 on every seed — 0.0% against a 70% target. The highest top probability the model produced anywhere was 0.602. |
 
 
 
