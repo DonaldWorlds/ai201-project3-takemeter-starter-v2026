@@ -47,7 +47,7 @@
     "accuracy_least_confident_third": 0.36363636363636365,
     "n_per_third": 11,
     "confidence_threshold": 0.7,
-    "mean_confidence": 0.43355438113212585,
+    "mean_confidence": 0.43355441093444824,
     "max_confidence": 0.4905802309513092,
     "share_at_or_above_threshold": 0.0
   },

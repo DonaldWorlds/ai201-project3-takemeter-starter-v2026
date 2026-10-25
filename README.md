@@ -258,6 +258,47 @@ Test results: Accuracy was 0.636 (63.6%), and macro F1 was 0.462. F1 was 0.667 f
 - *What came back:*  An explanation of the PyTorch and progress-bar warnings, along with an interpretation of accuracy, macro F1, and the per-label scores.
 - *What I changed:* I kept the default training settings and recorded the weak reaction result and the small number of reaction examples in the test set as limitations.
 
+**Moment 3 — unit 6, reading the error pattern**
+
+- *What I asked for:* I gave it my confusion matrix and the three-seed results
+  and asked what the pattern actually was, rather than whether the numbers were
+  good.
+- *What came back:* The observation that the whole `reaction` **column** is
+  zero, not just the diagonal cell — the model never predicts that label at
+  all, on any of the 99 held-out predictions. Then a breakdown showing that the
+  6 `reaction` posts account for half of all errors on two of the three seeds,
+  that the ceiling while the label stays inert is 0.818, and that 50%
+  `reaction` recall alone would clear my accuracy target.
+- *What I changed:* My diagnosis for criterion 2 had said the model "struggled
+  to distinguish `reaction`", which is a restatement of the score. I rewrote it
+  around the fact that the label is never emitted, and reframed criterion 1 as
+  downstream of criterion 2 rather than as a separate failure.
+
+**Moment 4 — unit 6, when the agreement check came back empty**
+
+- *What I asked for:* My staff agreement came out 30/30, so it gave me no
+  disagreements to diagnose from. I asked what else in the repo could speak to
+  whether my own labelling was consistent.
+- *What came back:* The suggestion to diff the committed versions of
+  `labels.csv` against each other. That surfaced something I had not thought of
+  as evidence: I labelled the same 216 posts twice in unit 5 under two versions
+  of my taxonomy, so I already had a self-agreement measurement sitting in my
+  git history. It comes out at 59 posts changing class, 27.3%, with `reaction`
+  the least stable label at 38.1% moved in from elsewhere.
+- *What I changed:* The criterion 2 diagnosis now rests on that number instead
+  of on the uninformative 30/30, and I added the taxonomy change to **The
+  Dataset** — it was a material fact about my data that I had not disclosed.
+
+**Scope of AI assistance in unit 6**
+
+Being plain about this, since the sections above are specific moments and the
+use was broader than four moments. I used AI assistance across this unit to
+audit the repo against the brief, to add the confidence measurement to
+`confidence_report` in the notebook, to implement the weighted-loss trainer, to
+check my reported numbers against the JSON files, and to draft and edit much of
+the prose in this README. The runs, the data and the results are my own and
+were produced on my machine; the analysis and the writing were done with
+substantial AI help.
 
 **Pre-labelling disclosure:**
 
@@ -738,38 +779,160 @@ clean posts under somebody else's tight rule cannot answer it either way.
 ## The Improvement
 
 **What I changed:**
-I changed the training setup to give the reaction class more weight in the loss function. I kept the dataset labels and held-out test set unchanged so I could test whether giving more importance to reaction during training improved its predictions.
+One thing: the loss function. Training now uses a **weighted cross-entropy**,
+where each class is weighted by inverse frequency computed from the training
+split — `analysis` 0.980, `hot_take` 0.714, `reaction` 1.724. A missed
+`reaction` post costs about 2.4× what a missed `hot_take` post costs. The code
+is `WeightedTrainer` and `balanced_class_weights` in the notebook, switched on
+by `USE_CLASS_WEIGHTS` in section 6.
+
+Nothing else moved. Same 216 posts, same labels, same taxonomy, same stratified
+splits, same three seeds, same 3 epochs / 2e-5 / batch 16, same criteria. Set
+`USE_CLASS_WEIGHTS = False` and the cell reproduces the before numbers exactly.
 
 **Which diagnosis pointed at it:**
-The original model had an F1 score of 0.000 for reaction across all three seeds. In Seed 42, five of the six actual reaction posts were classified as hot_take. The staff agreement check had 30 agreements and zero disagreements, so it did not reveal inconsistent labeling on that comparison set. These results motivated testing a training change before making unsupported changes to the labels.
+Criterion 2. The model never predicted `reaction` once across 99 held-out
+predictions, and `hot_take` outnumbers `reaction` 101 to 42, so while the model
+was unsure the cheapest available strategy was to ignore the small class
+entirely. Plain cross-entropy prices every mistake the same and therefore
+rewards exactly that. Criterion 1 is downstream of criterion 2, so this was the
+change with the most reach — and unlike relabelling, it is allowed this unit.
+
+I chose it over the other candidate, training longer, even though criterion 5's
+diagnosis says the model is badly underfit. A dead label is a worse failure
+than a timid one, and one change was the budget.
 
 ### Run Log — After
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.65 | 0.636 | 0.576 | 0.727 | MISSED |
+| 2. Every label F1 | ≥ 0.60 for every label | analysis: 0.621; hot_take: 0.615; reaction: 0.727 — **all met** | analysis: 0.581; hot_take: 0.643; reaction: 0.286 | analysis: 0.769; hot_take: 0.720; reaction: 0.667 — **all met** | MISSED |
+| 3. No label exceeds 50% of the dataset | ≤ 50% per label | analysis: 33.8%; hot_take: 46.8%; reaction: 19.4% | Same dataset | Same dataset | MET |
+| 4. Accuracy spread across seeds | ≤ 0.10 | 0.636 | 0.576 | 0.727 | **MISSED (spread: 0.152)** |
+| 5. Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | 0.0% (0/33) | 0.0% (0/33) | 0.0% (0/33) | MISSED |
+
+**Before and after, side by side**
+
+| Measure | Seed 42 before → after | Seed 7 before → after | Seed 2024 before → after |
+|---|---|---|---|
+| Overall accuracy | 0.636 → 0.636 (+0.000) | 0.636 → 0.576 (−0.061) | 0.667 → 0.727 (+0.061) |
+| **Macro F1** | 0.462 → **0.654** (+0.193) | 0.458 → **0.503** (+0.045) | 0.483 → **0.719** (+0.235) |
+| F1 — `analysis` | 0.667 → 0.621 (−0.046) | 0.636 → 0.581 (−0.056) | 0.700 → 0.769 (+0.069) |
+| F1 — `hot_take` | 0.718 → 0.615 (−0.103) | 0.737 → 0.643 (−0.094) | 0.750 → 0.720 (−0.030) |
+| **F1 — `reaction`** | 0.000 → **0.727** (+0.727) | 0.000 → **0.286** (+0.286) | 0.000 → **0.667** (+0.667) |
+| `reaction` predictions emitted | 0 → 5 | 0 → 1 | 0 → 9 |
+| Highest top probability | 0.491 → 0.458 | 0.505 → 0.460 | 0.602 → 0.467 |
+
+Criteria met: **2 before, 1 after.** Macro F1: **up on all three seeds.** Those
+two sentences are the whole result, and they disagree with each other.
 
 **Did it help, and how do I know:**
 
 <!-- If it didn't, say so. Relabelling that didn't help is a genuinely
      interesting result and earns full credit. -->
 
+**It fixed the thing it was aimed at, did nothing for anything else, and cost
+me a criterion I had passed.**
 
+*What it fixed.* `reaction` is no longer inert. It went from 0 predictions
+across 99 to 5, 1 and 9 on the three seeds, and its F1 went from exactly 0.000
+to 0.727, 0.286 and 0.667. Macro F1 rose on every seed, by +0.193, +0.045 and
++0.235. On seeds 42 and 2024 **every label now clears the 0.60 bar** — criterion
+2 is satisfied on two of three seeds where before it was satisfied on none.
+The diagnosis was right: the label was not unlearnable, it was unprofitable.
+
+*What it did not fix.* Overall accuracy is flat — +0.000, −0.061, +0.061 — so
+criterion 1 is still missed. Criterion 5 did not move at all: still 0 of 33
+predictions above 0.70 on every seed, and the highest top probability actually
+*fell*, from 0.491/0.505/0.602 to 0.458/0.460/0.467. That is what I should have
+expected. Weighting the loss changes which way probability mass leans, not how
+concentrated it is, and the underfitting diagnosed under criterion 5 is
+untouched by it. Roughly 30 gradient steps is still roughly 30 gradient steps.
+
+*What it cost.* `hot_take` F1 fell on all three seeds and `analysis` fell on
+two. The matrices say where it went: `analysis`↔`hot_take` confusions across
+the three seeds went from 17 to 22, almost all in one direction — `hot_take`
+posts called `analysis` rose from 2, 2 and 1 to 7, 7 and 4. Up-weighting the
+rare class also shifted `analysis` (0.980) above `hot_take` (0.714), so the
+model traded one bias for another. Accuracy stayed flat because the `reaction`
+posts it started getting right were paid for almost exactly by `hot_take` posts
+it started getting wrong.
+
+*And criterion 4 flipped from MET to MISSED* — spread 0.030 → 0.152. **This is
+the result I am most pleased with, and it is a failure.** In Milestone 4 I
+argued against my own MET on criterion 4: the model looked stable because it
+was degenerate, and a model that never emits a label cannot vary much. The
+improvement tested that claim without my intending it to. The moment the model
+started using all three labels, the variance appeared — `reaction` recall is
+0.667, 0.167 and 0.833 across the seeds, which is 4, 1 and 5 posts out of 6.
+A label with 6 test examples cannot produce a stable score, and the before-run
+hid that behind a constant zero. Criterion 4 did not get worse because the
+model got worse. It got worse because the model started doing the thing the
+criterion was too crude to measure.
+
+**Verdict:** I would keep this change. The scoreboard says 2 criteria met
+before and 1 after; macro F1, the measure that does not let a dead label hide,
+is up on all three seeds. I trust the second reading, and the first one is an
+argument about my criteria rather than about my model.
 
 ---
 
 ## What's Still Broken
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
+
+**Criterion 1 — overall accuracy (0.636, 0.576, 0.727 against ≥ 0.65).**
+What I would do: train longer. Criterion 5's diagnosis says the model is still
+near its initialisation after about 30 gradient steps, and the obvious next
+change is more epochs, a higher learning rate, or both, measured the same way.
+Why I stopped: one improvement was the budget for this unit, and I spent it on
+the dead label. I think that was the right order — accuracy that averages over
+a label the model refuses to predict is not a number worth lifting first.
+
+**Criterion 2 — every label F1 ≥ 0.60 (met on seeds 42 and 2024, failed on
+seed 7 at `reaction` 0.286).**
+What I would do: more `reaction` examples, but not before rewriting the rule.
+`reaction` recall across the three seeds is 4/6, 1/6 and 5/6 — a label measured
+on 6 posts cannot give a stable F1, so part of this is sample size and more
+data would genuinely help. The other part is not fixable by volume: the churn
+table shows 38.1% of my `reaction` posts were first labelled something else,
+and my `reaction` rule asks what a post is *about*, with no observable test.
+Labelling more posts under a rule I apply inconsistently would add noise, not
+signal. Why I stopped: labels, taxonomy and criteria were frozen this unit.
+
+**Criterion 4 — accuracy spread ≤ 0.10 (0.152).**
+What I would do: change the criterion, not the model, which is the one thing I
+am not allowed to do here — and it would not count anyway, because it would be
+loosening a target I missed. The honest version pairs stability with a quality
+floor, something like "spread ≤ 0.10 *and* every label F1 ≥ 0.60", so that it
+cannot be satisfied by failing consistently. Why I stopped: lowering or
+reshaping a missed target is the change that earns nothing, so it stays missed
+and diagnosed.
+
+**Criterion 5 — confidence (0% of predictions at ≥ 0.70, all three seeds).**
+What I would do: this is the same fix as criterion 1 — train longer — and I
+would measure it with the `share_at_or_above_threshold` field I added to
+`confidence_report`, which is now in the notebook for exactly this. Why I
+stopped: one change. It is also worth saying that this criterion may be wrong
+rather than merely unmet: I asked for confident predictions without asking
+whether confidence tracked correctness, and `accuracy_most_confident_third`
+versus `accuracy_least_confident_third` was already answering the better
+question. I am leaving it as filed and missed.
+
 **The gap between what I meant my labels to capture and what the model
 learned:**
 <!-- Two sentences. Your confusion matrix is the evidence. -->
 
-
+My taxonomy is built on one idea — whether a post gives a reason for its claim
+— and that is the one thing neither model learned: the `analysis`↔`hot_take`
+confusions, the boundary I wrote an explicit decision rule for, number 17
+across three seeds before the change and 22 after, getting worse even as
+everything else improved. What the model actually learned is the easier,
+shallower split my labels also happen to encode, between posts about the writer
+and posts about the music, which is why weighting the loss could switch
+`reaction` on almost immediately while the distinction I actually care about
+stayed broken in both runs.
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
@@ -788,19 +951,21 @@ learned:**
 
      SUBMISSION CHECKLIST — unit 6
 
-       [ ] Baseline vs. Trained table, with your prediction written beforehand
-       [ ] Run Log — Before, five criteria across three seeds
-       [ ] Confusion matrix TYPED AS A MARKDOWN TABLE
-       [ ] A verdict on every criterion
-       [ ] A diagnosis for every miss, using the agreement report as evidence
-       [ ] Agreement Report with every disagreement adjudicated
-       [ ] One improvement, with Run Log — After
-       [ ] What's Still Broken
-       [ ] results_three_seeds_before.json, results_three_seeds_after.json,
+       [x] Baseline vs. Trained table, with your prediction written beforehand
+       [x] Run Log — Before, five criteria across three seeds
+       [x] Confusion matrix TYPED AS A MARKDOWN TABLE
+       [x] A verdict on every criterion
+       [x] A diagnosis for every miss, using the agreement report as evidence
+       [x] Agreement Report with every disagreement adjudicated
+           (30/30, so no disagreements to adjudicate — the section says why
+           that is a null result rather than a clean bill of health)
+       [x] One improvement, with Run Log — After
+       [x] What's Still Broken
+       [x] results_three_seeds_before.json, results_three_seeds_after.json,
            baseline_results.json and
            agreement_results.json committed
-       [ ] At least four new commits
-       [ ] The SAME repository URL as last unit
+       [x] At least four new commits
+       [ ] The SAME repository URL as last unit  <-- SUBMIT THIS YOURSELF
 
      Do not delete and recreate this repository.
      ═════════════════════════════════════════════════════════════════════ -->
