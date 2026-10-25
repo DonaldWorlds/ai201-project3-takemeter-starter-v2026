@@ -212,19 +212,22 @@ Pre-labelling disclosure: I labeled the first 20 posts independently without AI 
      prints this table for you. -->
 
 | Measure | Baseline | Trained | Difference |
-|---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+|---|---:|---:|---:|
+| Overall accuracy | 0.364 | 0.636 | +0.273 |
+| Macro F1 | 0.310 | 0.462 | +0.152 |
+| F1 — `analysis` | 0.500 | 0.667 | +0.167 |
+| F1 — `hot_take` | 0.000 | 0.718 | +0.718 |
+| F1 — `reaction` | 0.429 | 0.000 | -0.429 |
 
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
      prediction made afterwards isn't one. -->
+I predict that the trained model will perform better overall than the baseline, particularly on the analysis and hot_take labels, while reaction may remain difficult to classify.
 
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
      nothing — and that is a real finding, not a failure. Say it plainly. -->
+The trained model performed better overall than the baseline, with accuracy increasing from 0.364 to 0.636 and macro F1 increasing from 0.310 to 0.462. Fine-tuning helped the model classify analysis and hot_take posts more effectively, especially hot_take, whose F1 increased from 0.000 to 0.718. However, the trained model scored 0.000 F1 on reaction, compared with 0.429 for the baseline. This suggests that fine-tuning improved overall performance but did not help every category. The reaction test set contained only six posts, so more examples are needed to evaluate that category reliably.
 
 
 
@@ -373,9 +376,6 @@ Pre-labelling disclosure: I labeled the first 20 posts independently without AI 
 ## What's Still Broken
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
-
-
-
 **The gap between what I meant my labels to capture and what the model
 learned:**
 <!-- Two sentences. Your confusion matrix is the evidence. -->
@@ -419,3 +419,6 @@ learned:**
 ---
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
+
+
+I predict that the trained model will perform better overall than the baseline, particularly on the analysis and hot_take labels, while reaction may remain difficult to classify.
