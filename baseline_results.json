@@ -6,12 +6,12 @@
   "used_definitions": true,
   "scores": {
     "n": 33,
-    "accuracy": 0.36363636363636365,
-    "f1_macro": 0.30952380952380953,
+    "accuracy": 0.3333333333333333,
+    "f1_macro": 0.16666666666666666,
     "per_label": {
       "analysis": {
-        "precision": 0.36,
-        "recall": 0.8181818181818182,
+        "precision": 0.3333333333333333,
+        "recall": 1.0,
         "f1": 0.5,
         "support": 11
       },
@@ -22,9 +22,9 @@
         "support": 16
       },
       "reaction": {
-        "precision": 0.375,
-        "recall": 0.5,
-        "f1": 0.42857142857142855,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
         "support": 6
       }
     }
@@ -33,12 +33,12 @@
     {
       "text": "The only reason this is remembered at all is because the name is so funny",
       "gold": "analysis",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "Also wasn\u2019t futures name back than meat boy or something like that? It legit shocked me when I learned how long Future has been in the game and I only learned this cuz I saw that the mf had a writing credit in blueberry yum yum",
       "gold": "reaction",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "2Pac was part of the Digital Underground before he blew up solo",
@@ -73,7 +73,7 @@
     {
       "text": "I've been listening to a lot of Wu-Tang recently and just learned that, because of his verse in Protect Yo Neck, where he is dissing his old label.",
       "gold": "analysis",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "Similiarly, I didn't like any Odd Future music, but I love all of their solo work.",
@@ -103,7 +103,7 @@
     {
       "text": "These are all rappers besides Chad?",
       "gold": "hot_take",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "The guy from \"Nothing But Trouble?\"",
@@ -118,7 +118,7 @@
     {
       "text": "meathead and tity boi on the track",
       "gold": "hot_take",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "Wasn't he a backup dancer?",
@@ -168,12 +168,12 @@
     {
       "text": "\ud83d\ude02\ud83d\ude02 could've said all that and used cee lo as a much better example",
       "gold": "hot_take",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "This is a good pull I had no clue about that I just remembered she was with Gucci before Wayne",
       "gold": "reaction",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "Does Jeezy being apart of Boyz in the Hood count?",
@@ -183,7 +183,7 @@
     {
       "text": "This is weirding me out. I remember Key, Father, all them making songs together back then but not Playboi Carti. Hmmm",
       "gold": "reaction",
-      "predicted": "reaction"
+      "predicted": "analysis"
     },
     {
       "text": "That isn't true, he started as a dancer, but he performed vocals as well.\n\nhttps://youtu.be/z9C53nOkqeM?t=90",

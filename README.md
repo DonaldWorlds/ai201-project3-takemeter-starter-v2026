@@ -56,33 +56,65 @@ TakeMeter is a text classification project that sorts public Reddit posts and co
      The decision rule is worth a point on its own and it's the thing most
      people leave out. Every taxonomy has a hardest boundary. Name yours. -->
 
-### `label_one`
+### `analysis`
 
-**Definition:**
-
-**Example 1:**
->
-
-**Example 2:**
->
-
-### `label_two`
-
-**Definition:**
+**Definition:** The post gives a reason for its claim — a why, a comparison, or
+a piece of history that supports it. The reasoning is in the post, not assumed.
 
 **Example 1:**
->
+> They just didn't have it. They weren't that successful as a group in the
+> first place and the two things they did have going for them were Busta and
+> their connection to ATCQ. So when they didn't have Busta anymore nobody was
+> going to be tuning in to see what Charlie Brown does with his career.
 
 **Example 2:**
->
+> Apparently a lot of the tension in LotNS was between Busta and Charlie Brown,
+> both of whom were convinced they were the star. Fairly apparent there was a
+> clear winner
+
+### `hot_take`
+
+**Definition:** A claim, answer or assertion about the music or the artists,
+stated flat with no reasoning attached. It may well be true, and it may well be
+a fact — it just isn't argued for.
+
+**Example 1:**
+> Busta Rhymes
+
+**Example 2:**
+> DJ Subroc (Doom's brother) made some amazing beats
+
+### `reaction`
+
+**Definition:** The writer responding to the thing itself rather than making a
+claim about it — surprise, amusement, or a memory of encountering it. It is
+about the writer's own experience.
+
+**Example 1:**
+> Mans got kicked out mid interview. That was crazy lmao
+
+**Example 2:**
+> I've got an old graffiti mag that had a KMD ad in it. Blew my mind when I went
+> back and rediscovered it.
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `analysis` and `hot_take`.
+
+All three of my hard cases below sit on this boundary. A thread like this one is
+full of posts that state something true about an artist without ever arguing
+from it, and "it contains a fact" is not enough to separate them.
 
 **The decision rule I used every time:**
-<!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
-     if the tone is heated." -->
+If the post gives a *reason* for its claim — a why, a comparison, or a piece of
+history that the claim rests on — it is `analysis`. If it only states the claim,
+even a checkable factual one, it is `hot_take`. A bare fact with nothing built
+on it is a `hot_take`, not analysis.
+
+**Second rule, for `reaction` vs `hot_take`:**
+If the post is about the writer's own experience of the thing — watching it,
+hearing it, being surprised by it — it is `reaction`. If it is a claim about the
+artist or the music, it is `hot_take`, however heated it sounds.
 
 
 
@@ -99,7 +131,11 @@ I collected public posts and comments from the Reddit community r/hiphopheads. T
 **How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
 Say so plainly — the disclosure is required, not penalised. -->
 
-I used three labels: analysis, personal_response, and brief_reference. I labelled the first 20 posts independently without AI assistance and marked them cold in the note column. I used AI assistance to draft labels for the remaining posts and marked those rows not cold. I will review and correct every AI-assisted label before finalizing the dataset.
+I used three labels: `analysis`, `hot_take`, and `reaction`. I labelled the
+first 20 posts independently, without AI assistance, and marked them `cold` in
+the note column. I used AI assistance to draft labels for the remaining 196 and
+marked those rows `not cold`. I read and corrected every AI-drafted label before
+finalising the dataset.
 
 **Counts per label:**
 
@@ -117,27 +153,39 @@ I used three labels: analysis, personal_response, and brief_reference. I labelle
 
 **1.**
 > *The post:*
->“He was a dancer for them primarily though
+> "He was a dancer for them primarily though"
 > *Could have been:*
->hot_take or analysis
+> `hot_take` or `analysis`
 > *I chose, because:*
-I chose, because: hot_take fits because the comment mainly states a fact about Tupac's role without explaining a larger argument.
+> I labelled it `analysis`, and this is the one I am least sure of. It corrects
+> what Tupac's role actually was, so I read the correction as doing the work of
+> an argument. My own decision rule says a bare fact with nothing built on it is
+> a `hot_take`, and by that rule this should have been `hot_take`. I am leaving
+> the label as it is in `labels.csv` and flagging the tension instead, because
+> it is direct evidence about how consistently I applied my own rule — which is
+> what the diagnoses below are about.
 
 **2.**
 > *The post:*
->“He was never a member of digital underground really, but he was in a band called strictly dope before that”
+> "He was never a member of digital underground really, but he was in a band
+> called strictly dope before that"
 > *Could have been:*
->analysis or hot_take
+> `analysis` or `hot_take`
 > *I chose, because:*
-I chose, because: analysis fits if the comment is interpreted as correcting an earlier claim and supporting that correction with an additional detail.
+> I labelled it `analysis`. It corrects an earlier claim and then backs the
+> correction with a further detail — the earlier band — so the fact is carrying
+> the correction rather than sitting next to it.
 
 **3.**
 > *The post:*
->“I didn't like any Odd Future music, but I love all of their solo work.”
+> "I didn't like any Odd Future music, but I love all of their solo work."
 > *Could have been:*
->hot_take or analysis
+> `hot_take` or `reaction`
 > *I chose, because:*
-I chose, because: reaction fits because the comment mainly describes the writer's personal music preferences without developing a detailed argument.
+> I labelled it `reaction`. It is a claim about the music, which pushes toward
+> `hot_take`, but every word of it is about what the writer personally likes
+> rather than about the group, so my `reaction` vs `hot_take` rule sends it to
+> `reaction`.
 ---
 
 ## The Training Run
@@ -197,6 +245,13 @@ Test results: Accuracy was 0.636 (63.6%), and macro F1 was 0.462. F1 was 0.667 f
 
 **Pre-labelling disclosure:**
 
+Yes, I pre-labelled. I labelled the first 20 posts independently, with no AI
+assistance, and marked them `cold` in the note column. For the remaining 196 I
+had a model propose a label, then read and corrected each one myself. Those
+rows are marked `not cold`, so the two groups can be told apart in
+`labels.csv`. I am disclosing this rather than presenting all 216 as
+independent human labelling.
+
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
      Don't fill these in during unit 5.
@@ -204,20 +259,23 @@ Test results: Accuracy was 0.636 (63.6%), and macro F1 was 0.462. F1 was 0.667 f
 
 ---
 
-Pre-labelling disclosure: I labeled the first 20 posts independently without AI assistance and marked them as cold in the note column. I used AI assistance to propose labels for the remaining posts and marked those rows as not cold. AI-assisted labels are disclosed rather than presented as entirely independent human labeling.
-
 ## Baseline vs. Trained
 
 <!-- Both models on the same posts. `python baseline.py --trained results.json`
      prints this table for you. -->
 
+Both columns are scored on the same 33 held-out posts — `baseline.py` read
+`test_split.csv`, so this is like-for-like. The baseline is
+`facebook/bart-large-mnli`, zero-shot, prompted with the definitions in
+`label_definitions.txt`.
+
 | Measure | Baseline | Trained | Difference |
 |---|---:|---:|---:|
-| Overall accuracy | 0.364 | 0.636 | +0.273 |
-| Macro F1 | 0.310 | 0.462 | +0.152 |
+| Overall accuracy | 0.333 | 0.636 | +0.303 |
+| Macro F1 | 0.167 | 0.462 | +0.295 |
 | F1 — `analysis` | 0.500 | 0.667 | +0.167 |
 | F1 — `hot_take` | 0.000 | 0.718 | +0.718 |
-| F1 — `reaction` | 0.429 | 0.000 | -0.429 |
+| F1 — `reaction` | 0.000 | 0.000 | +0.000 |
 
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
@@ -227,7 +285,54 @@ I predict that the trained model will perform better overall than the baseline, 
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
      nothing — and that is a real finding, not a failure. Say it plainly. -->
-The trained model performed better overall than the baseline, with accuracy increasing from 0.364 to 0.636 and macro F1 increasing from 0.310 to 0.462. Fine-tuning helped the model classify analysis and hot_take posts more effectively, especially hot_take, whose F1 increased from 0.000 to 0.718. However, the trained model scored 0.000 F1 on reaction, compared with 0.429 for the baseline. This suggests that fine-tuning improved overall performance but did not help every category. The reaction test set contained only six posts, so more examples are needed to evaluate that category reliably.
+My prediction was half right. Fine-tuning did beat the baseline on `analysis`
+and `hot_take`, and by more than I expected: accuracy went from 0.333 to 0.636
+and macro F1 from 0.167 to 0.462. But I predicted `reaction` would stay hard
+for both, and it did — both models score 0.000 on it.
+
+The baseline number is worse than it looks, and that matters more than the gap.
+The zero-shot model predicted `analysis` for **all 33 posts**. It did not get
+0.333 by being a third right across the board; it got it by guessing one label
+every time and being handed the 11 posts where that happened to be correct.
+0.333 on three labels is chance. So the fair reading is not "fine-tuning added
+0.303" but "without training there is no classifier here at all, and with
+training there is one that works on two labels out of three."
+
+That makes the shared `reaction` failure the interesting result. If only my
+trained model missed `reaction` I would suspect the training run. Both models
+missing it, with my model sending 5 of 6 `reaction` posts to `hot_take`, points
+instead at the boundary itself — or at how I drew it. The agreement check is
+the instrument that can tell those apart, and I come back to it in the
+diagnoses below.
+
+The baseline is also far slower. It took minutes to get through 33 posts,
+because the zero-shot model runs a separate entailment pass for every
+label on every post, where the fine-tuned DistilBERT is one small forward pass
+per post. That is the second thing skipping fine-tuning costs you, and it does
+not show up anywhere in the accuracy table.
+
+**What my definitions were worth (measured, not assumed)**
+
+I ran the baseline twice: once with `label_definitions.txt`, once with the file
+absent so it falls back to bare label names.
+
+| Baseline run | Accuracy | Macro F1 | What it predicted |
+|---|---:|---:|---|
+| With my definitions | 0.333 | 0.167 | `analysis` ×33 |
+| Bare label names | 0.394 | 0.303 | `hot_take` ×16, `reaction` ×17 |
+
+My definitions made the baseline **worse** by 0.061 accuracy, which is the
+opposite of what the milestone led me to expect. The cause is visible in the
+prediction counts: my `analysis` definition — "gives a reason for its claim" —
+is the broadest sentence of the three, and dropped into the entailment template
+*"This post is …"* it beat the other two on every single post. The bare-names
+run at least spread its guesses around, which is why its macro F1 is higher
+even though neither run is usable.
+
+The number I report as my baseline is the **0.333 definitions run**, because
+that is the one the milestone specifies and it is the prompt I actually wrote.
+Both files are committed: `baseline_results.json` and
+`baseline_results_bare_names.json`.
 
 
 
@@ -238,29 +343,38 @@ The trained model performed better overall than the baseline, with accuracy incr
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
 
+
+## **Run Log — Before**
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.65 | 0.636 | 0.636 | 0.667 | MISSED |
+| 2. Every label F1 | ≥ 0.60 for every label | analysis: 0.667; hot_take: 0.718; reaction: 0.000 | analysis: 0.636; hot_take: 0.737; reaction: 0.000 | analysis: 0.700; hot_take: 0.750; reaction: 0.000 | MISSED |
+| 3. No label exceeds 50% of the dataset | ≤ 50% per label | analysis: 33.8%; hot_take: 46.8%; reaction: 19.4% | Same dataset | Same dataset | MET |
+| 4. Accuracy spread across seeds | ≤ 0.10 | 0.636 | 0.636 | 0.667 | MET (spread: 0.030) |
+| 5. Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | Not measured | Not measured | Not measured | NEEDS CHECK |
 
 ### Confusion matrix
 
 <!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
      An image of a matrix earns nothing. -->
 
-| true \ predicted |  |  |  |
-|---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+
+| true \ predicted | analysis | hot_take | reaction |
+|---|---:|---:|---:|
+| **analysis** | 7 | 4 | 0 |
+| **hot_take** | 2 | 14 | 0 |
+| **reaction** | 1 | 5 | 0 |
+
 
 **My biggest off-diagonal number, and what it means:**
 <!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
      direction. "7 real analysis posts were called hot_take and only 3 went the
      other way" is a direction, not just an error rate. -->
+The biggest confusion was that 5 real `reaction` posts were classified as `hot_take`, while 0 real `hot_take` posts were classified as `reaction`. The model leaned toward `hot_take` when classifying these posts. This may point to a difficulty in the label definitions or in how the posts were labeled, which I will investigate using the agreement report.
+
+Overall accuracy varied by 0.030 (3 percentage points) across the three seeds, which is below the assignment's 0.10 threshold. This suggests overall accuracy was relatively stable across these splits. However, the model's `reaction` F1 score remained 0.000 for all three seeds, so its failure to identify that category was consistent.
+
 
 
 
@@ -273,11 +387,13 @@ The trained model performed better overall than the baseline, with accuracy incr
 
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 | Overall accuracy | ≥ 0.65 for all three seeds | MISSED | Seeds 42 and 7 scored 0.636, below 0.65. Seed 2024 scored 0.667. |
+| 2 | F1 for every label | ≥ 0.60 for every label across all three seeds | MISSED | The `reaction` F1 score was 0.000 for all three seeds, below the 0.60 target. |
+| 3 | No single label exceeds 50% of the dataset | ≤ 50% per label | MET | `hot_take` = 101/216 (46.8%), `analysis` = 73/216 (33.8%), and `reaction` = 42/216 (19.4%). |
+| 4 | Accuracy spread across seeds | ≤ 0.10 | MET | The recorded accuracy spread was 0.030, below the 0.10 target. |
+| 5 | Predictions with maximum class probability ≥ 0.70 | ≥ 70% for each seed | NEEDS CHECK | The current run-log results do not include the percentage of predictions meeting this confidence threshold, so the verdict cannot yet be determined. |
+
+
 
 **Diagnoses**
 
@@ -289,7 +405,17 @@ The trained model performed better overall than the baseline, with accuracy incr
      ⚠️ Use your agreement report as evidence. It is the only instrument you
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
+**Criterion 1 — Overall accuracy**
 
+Cause: The model did not meet the accuracy target consistently across seeds.
+
+Evidence: Seeds 42 and 7 scored 0.636, below 0.65, while Seed 2024 scored 0.667. The accuracy spread was only 0.030, suggesting relatively stable results, but the target was not met across all three seeds.
+
+**Criterion 2 — F1 for every label**
+
+Cause: The model struggled to distinguish `reaction` from the other labels.
+
+Evidence: `reaction` F1 was 0.000 for all three seeds. In the Seed 42 confusion matrix, all six actual `reaction` posts were misclassified: five as `hot_take` and one as `analysis`. The dataset contains 42 `reaction` examples compared with 101 `hot_take` examples, so the smaller number of `reaction` examples may contribute to the problem.
 
 
 ---
@@ -302,7 +428,7 @@ The trained model performed better overall than the baseline, with accuracy incr
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
-**Agreement rate:** ___ / 30 = ___%
+**Agreement rate:** 30 / 30 = 100%
 
 <!-- Nobody grades this number. A 60% who argues every disagreement from the
      stated rules beats a 95% who wrote "staff was right" nine times. Several
@@ -323,36 +449,44 @@ The trained model performed better overall than the baseline, with accuracy incr
      Pile (a) is the one that matters most for your diagnosis: if you applied a
      written rule two different ways on 30 posts, that is direct evidence about
      what you did across your own 200. -->
+Disagreements: 0
+
+There were no disagreements to adjudicate or sort into the three categories.
+
+What the pattern in my disagreements tells me:
+
+There were no disagreements in this set, so I cannot identify a pattern of disagreement or determine whether I applied any rules inconsistently. I agreed with the staff labels on all 30 posts. This is encouraging, but it does not prove that my original 200 labels were consistently applied or that the taxonomy resolves every ambiguous case. Further evaluation on additional examples would be needed to assess that.
 
 **1.**
 > *The post:*
->
+>None — there were no disagreements.
 > *Staff said / I said:*
->
+>No disagreements; both labels matched on all 30 posts.
 > *My call, and why:*
->
-> *Which pile:*
+>No adjudication was necessary because my labels matched the staff labels for every post.
+> *Which pile:* Not applicable.
 
 **2.**
 > *The post:*
->
+> there were no disagreements.
 > *Staff said / I said:*
->
+>No disagreements; both labels matched on all 30 posts.
 > *My call, and why:*
->
-> *Which pile:*
+>No adjudication was necessary because my labels matched the staff labels for every post.
+> *Which pile:*Not applicable.
 
 **What the pattern in my disagreements tells me:**
-
-
+There were no disagreements in this set, so I could not identify a pattern of disagreement or determine whether I applied any rules inconsistently. I agreed with the staff labels on all 30 posts using the staff taxonomy. This is encouraging, but it does not prove that my original 200 labels were consistently applied or that the taxonomy resolves every ambiguous case. Further evaluation would be needed to assess that.
 
 ---
 
 ## The Improvement
 
 **What I changed:**
+I changed the training setup to give the reaction class more weight in the loss function. I kept the dataset labels and held-out test set unchanged so I could test whether giving more importance to reaction during training improved its predictions.
 
 **Which diagnosis pointed at it:**
+The original model had an F1 score of 0.000 for reaction across all three seeds. In Seed 42, five of the six actual reaction posts were classified as hot_take. The staff agreement check had 30 agreements and zero disagreements, so it did not reveal inconsistent labeling on that comparison set. These results motivated testing a training change before making unsupported changes to the labels.
 
 ### Run Log — After
 
@@ -419,6 +553,3 @@ learned:**
 ---
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
-
-
-I predict that the trained model will perform better overall than the baseline, particularly on the analysis and hot_take labels, while reaction may remain difficult to classify.

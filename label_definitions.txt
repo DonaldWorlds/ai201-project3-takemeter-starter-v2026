@@ -1,10 +1,7 @@
-# Your label definitions, one per line, as `label: definition`.
-#
-# Copy these from your README so the baseline is judged on exactly the
-# definitions you wrote. baseline.py reads this file.
-#
-# Delete the examples below and put yours in.
+# My label definitions, one per line, as `label: definition`.
+# Copied from the Label Taxonomy section of README.md. baseline.py reads this
+# file and uses these sentences — not the label names — as the prompt.
 
-analysis: makes an argument backed by a specific, checkable fact
-hot_take: a confident claim with no support offered
-reaction: an immediate response to something that just happened
+analysis: a post that gives a reason for its claim, a why or a comparison or a piece of history that the claim rests on
+hot_take: a claim or answer about the music or the artists stated flat, with no reasoning attached, even when it is factual
+reaction: the writer responding to the thing itself rather than claiming anything about it, surprise or amusement or a memory of encountering it
